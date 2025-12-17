@@ -1,0 +1,14 @@
+node_modules/
+.env
+.local/
+attached_assets/
+script/
+shared/
+components.json
+drizzle.config.ts
+postcss.config.js
+tsconfig.json
+vite.config.ts
+package-lock.json
+package.json
+start.bat
