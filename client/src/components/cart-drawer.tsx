@@ -15,20 +15,29 @@ import { useStore } from "@/lib/store";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 
 export function CartDrawer() {
-  const { 
-    cart, 
-    isCartOpen, 
-    toggleCart, 
-    removeFromCart, 
-    updateQuantity, 
+  const {
+    cart,
+    isCartOpen,
+    toggleCart,
+    removeFromCart,
+    updateQuantity,
     total,
-    clearCart 
+    clearCart,
   } = useStore();
-  
+
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleCheckout = () => {
+    if (cart.length === 0) {
+      toast({
+        title: "Cart is Empty",
+        description: "Please add items to your cart before checkout.",
+        duration: 2000,
+      });
+      return;
+    }
+
     setIsCheckingOut(true);
     // Simulate processing
     setTimeout(() => {
@@ -43,6 +52,8 @@ export function CartDrawer() {
     }, 1500);
   };
 
+  const cartTotal = total();
+
   return (
     <Sheet open={isCartOpen} onOpenChange={toggleCart}>
       <SheetContent className="w-full sm:w-[400px] flex flex-col p-0 gap-0">
@@ -52,7 +63,9 @@ export function CartDrawer() {
             Your Cart
           </SheetTitle>
           <SheetDescription>
-            {cart.length === 0 ? "Your cart is currently empty." : `You have ${cart.length} items in your cart.`}
+            {cart.length === 0
+              ? "Your cart is currently empty."
+              : `You have ${cart.length} item${cart.length !== 1 ? "s" : ""} in your cart.`}
           </SheetDescription>
         </SheetHeader>
 
@@ -63,41 +76,54 @@ export function CartDrawer() {
                 {cart.map((item) => (
                   <div key={item.id} className="flex gap-4">
                     <div className="h-20 w-20 rounded-lg overflow-hidden bg-secondary/20 flex-shrink-0 border border-border">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
+                      <img
+                        src={item.image}
+                        alt={item.name}
                         className="h-full w-full object-cover"
                       />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-heading font-semibold text-foreground line-clamp-1">{item.name}</h4>
-                        <p className="text-sm text-muted-foreground">₹{item.price.toLocaleString('en-IN')}</p>
+                        <h4 className="font-heading font-semibold text-foreground line-clamp-1">
+                          {item.name}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          ₹{item.price.toLocaleString("en-IN")}
+                        </p>
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center border rounded-md h-8 bg-background">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8 rounded-none hover:bg-secondary/50"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.id,
+                                Math.max(1, item.quantity - 1)
+                              )
+                            }
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <span className="w-8 text-center text-sm font-medium">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-8 w-8 rounded-none hover:bg-secondary/50"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-8 w-8 text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                           onClick={() => removeFromCart(item.id)}
                         >
@@ -109,12 +135,12 @@ export function CartDrawer() {
                 ))}
               </div>
             </ScrollArea>
-            
+
             <div className="p-6 bg-secondary/10 border-t mt-auto">
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{total().toLocaleString('en-IN')}</span>
+                  <span>₹{cartTotal.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -123,10 +149,12 @@ export function CartDrawer() {
                 <Separator />
                 <div className="flex justify-between items-center">
                   <span className="font-heading font-bold text-lg">Total</span>
-                  <span className="font-heading font-bold text-xl text-primary">₹{total().toLocaleString('en-IN')}</span>
+                  <span className="font-heading font-bold text-xl text-primary">
+                    ₹{cartTotal.toLocaleString("en-IN")}
+                  </span>
                 </div>
-                <Button 
-                  className="w-full h-12 text-lg rounded-full font-heading" 
+                <Button
+                  className="w-full h-12 text-lg rounded-full font-heading"
                   size="lg"
                   onClick={handleCheckout}
                   disabled={isCheckingOut}
