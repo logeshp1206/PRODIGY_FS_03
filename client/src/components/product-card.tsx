@@ -19,10 +19,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleBuyNow = () => {
     addToCart(product);
-    // The cart automatically opens due to addToCart logic in store, 
-    // but if we want to ensure it feels like "Buy Now", we can just let it open.
-    // If we wanted to go straight to checkout logic, we'd need more state.
-    // For now, "Buy Now" adds to cart and opens it, which is standard for quick buy.
+    // The cart automatically opens due to addToCart logic in store
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+      duration: 2000,
+    });
   };
 
   return (
@@ -45,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
         </div>
-        
+
         <CardHeader className="p-4 pb-0">
           <div className="flex justify-between items-start mb-2">
             <Badge variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/80">
@@ -60,20 +62,20 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
         </CardHeader>
-        
+
         <CardContent className="p-4 pt-2 flex-grow">
           <p className="text-muted-foreground text-sm line-clamp-2">
             {product.description}
           </p>
         </CardContent>
-        
+
         <CardFooter className="p-4 pt-0 flex items-center justify-between mt-auto">
           <span className="font-heading text-xl font-bold text-primary">
             ₹{product.price.toLocaleString('en-IN')}
           </span>
           <div className="flex gap-2">
-            <Button 
-              onClick={() => addToCart(product)} 
+            <Button
+              onClick={() => addToCart(product)}
               disabled={!product.inStock}
               variant="outline"
               className="rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 px-3"
@@ -81,8 +83,8 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               <ShoppingCart className="w-4 h-4" />
             </Button>
-            <Button 
-              onClick={handleBuyNow} 
+            <Button
+              onClick={handleBuyNow}
               disabled={!product.inStock}
               className="rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 flex-1"
               size="sm"
