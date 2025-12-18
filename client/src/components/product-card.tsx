@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 
 export function ProductCard({ product }: ProductCardProps) {
   const addToCart = useStore((state) => state.addToCart);
-  const toggleCart = useStore((state) => state.toggleCart);
   const { toast } = useToast();
 
   const handleBuyNow = () => {
